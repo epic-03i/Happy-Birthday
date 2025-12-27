@@ -3,26 +3,34 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>For Someone Special ❤️</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+        }
+        
         body {
             margin: 0;
             overflow: hidden;
-            font-family: 'Inter', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
             height: 100vh;
-            touch-action: manipulation;
-             background: linear-gradient(135deg, #f9a8d4, #f3e8ff);
+            width: 100vw;
+            touch-action: pan-y pinch-zoom;
+            background: linear-gradient(135deg, #f9a8d4, #f3e8ff);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         #app {
             position: relative;
             width: 100%;
-            height: 100%;
+            min-height: 100vh;
             overflow: hidden;
         }
 
@@ -30,29 +38,53 @@
             position: relative;
             z-index: 10;
             width: 100%;
-            height: 100%;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 20px;
-            box-sizing: border-box;
+            padding: 15px;
+            padding-top: 60px;
+            padding-bottom: 80px;
         }
 
         .step {
             position: absolute;
-            width: 100%;
-            max-width: 800px;
-            padding: 40px;
-            background: rgba(255, 255, 255, 0.509);
+            width: calc(100% - 30px);
+            max-width: 95%;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
             text-align: center;
             opacity: 0;
             transform: translateY(20px);
             transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
             pointer-events: none;
+            overflow-y: auto;
+            max-height: calc(100vh - 100px);
+            margin: 0 auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .step::-webkit-scrollbar {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .step {
+                padding: 40px;
+                max-width: 800px;
+                width: 90%;
+                max-height: 85vh;
+            }
+            
+            #content {
+                padding: 30px;
+                padding-top: 80px;
+            }
         }
 
         .step.active {
@@ -65,22 +97,42 @@
             background: linear-gradient(135deg, #ec4899, #f43f5e);
             color: white;
             border: none;
-            padding: 12px 24px;
+            padding: 16px 32px;
             border-radius: 50px;
             font-weight: 600;
             cursor: pointer;
             margin-top: 20px;
             box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
             transition: all 0.3s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+            font-size: 17px;
+            min-height: 55px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+            width: auto;
+            min-width: 200px;
+            position: relative;
         }
 
         .btn:active {
-            transform: translateY(0);
+            transform: scale(0.98);
+        }
+
+        @media (max-width: 480px) {
+            .btn {
+                padding: 14px 28px;
+                font-size: 16px;
+                min-height: 52px;
+                min-width: 180px;
+            }
+        }
+
+        @media (hover: hover) {
+            .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+            }
         }
 
         .text-gradient {
@@ -88,6 +140,7 @@
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            -webkit-text-fill-color: transparent;
         }
 
         .heart-beat {
@@ -98,55 +151,77 @@
             0% {
                 transform: scale(1);
             }
-
             25% {
                 transform: scale(1.1);
             }
-
             50% {
                 transform: scale(1);
             }
-
             75% {
                 transform: scale(1.1);
             }
-
             100% {
                 transform: scale(1);
             }
         }
 
         .emoji {
-            font-size: 3rem;
+            font-size: 2.8rem;
             margin-bottom: 20px;
             display: inline-block;
+            line-height: 1;
+        }
+
+        @media (max-width: 480px) {
+            .emoji {
+                font-size: 2.5rem;
+                margin-bottom: 15px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .emoji {
+                font-size: 3.5rem;
+                margin-bottom: 25px;
+            }
         }
 
         .reason-card {
             background: white;
             border-radius: 15px;
             padding: 20px;
-            margin: 10px;
+            margin: 10px 0;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
+            width: 100%;
         }
 
-        .reason-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        @media (max-width: 767px) {
+            .reason-card {
+                padding: 15px;
+                margin: 8px 0;
+            }
         }
 
         #progress-container {
             position: fixed;
-            top: 20px;
+            top: 15px;
             left: 50%;
             transform: translateX(-50%);
-            width: 80%;
-            max-width: 400px;
+            width: 85%;
+            max-width: 350px;
             height: 6px;
             background: rgba(255, 255, 255, 0.3);
             border-radius: 3px;
             z-index: 100;
+        }
+
+        @media (max-width: 480px) {
+            #progress-container {
+                top: 10px;
+                max-width: 280px;
+                height: 5px;
+            }
         }
 
         #progress-bar {
@@ -164,63 +239,291 @@
             width: 100%;
             height: 100%;
             z-index: 1;
+            pointer-events: none;
         }
         
-        /* Music Status Indicator - Minimal */
+        /* Music Status Indicator - Mobile Friendly */
         .music-status {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             display: none;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             z-index: 1000;
             cursor: pointer;
-            font-size: 18px;
-            opacity: 0.7;
+            font-size: 22px;
+            opacity: 0.9;
+            touch-action: manipulation;
+            border: none;
+            user-select: none;
+            -webkit-user-select: none;
         }
-        
+
+        @media (max-width: 480px) {
+            .music-status {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+                bottom: 15px;
+                right: 15px;
+            }
+        }
+
+        .music-status:active {
+            transform: scale(0.95);
+        }
+
         .music-status.playing {
             animation: heartbeat 1.5s ease-in-out infinite;
+        }
+
+        /* Responsive Typography */
+        h1 {
+            font-size: 2.2rem;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            font-weight: 800;
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+                margin-bottom: 15px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 3.5rem;
+                margin-bottom: 25px;
+            }
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            line-height: 1.3;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        @media (max-width: 480px) {
+            h2 {
+                font-size: 1.5rem;
+                margin-bottom: 15px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            h2 {
+                font-size: 2.5rem;
+                margin-bottom: 25px;
+            }
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            line-height: 1.3;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 480px) {
+            h3 {
+                font-size: 1.1rem;
+                margin-bottom: 8px;
+            }
+        }
+
+        p {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #4a5568;
+        }
+
+        @media (max-width: 480px) {
+            p {
+                font-size: 0.95rem;
+                line-height: 1.5;
+                margin-bottom: 15px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            p {
+                font-size: 1.125rem;
+                line-height: 1.7;
+            }
+        }
+
+        /* Grid System for Cards */
+        .grid {
+            display: grid;
+            gap: 15px;
+            width: 100%;
+        }
+
+        @media (max-width: 767px) {
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+        }
+
+        /* Memory Image Container */
+        .memory-container {
+            background: linear-gradient(135deg, #fce7f3, #fecaca);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 20px 0;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 480px) {
+            .memory-container {
+                padding: 15px;
+                margin: 15px 0;
+            }
+        }
+
+        .memory-img {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 480px) {
+            .memory-img {
+                width: 140px;
+                height: 140px;
+            }
+        }
+
+        /* Long Text Container for Step 5 */
+        .long-text-container {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        @media (max-width: 480px) {
+            .long-text-container {
+                max-height: 250px;
+                font-size: 0.9rem;
+                line-height: 1.5;
+            }
+        }
+
+        .long-text-container::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .long-text-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .long-text-container::-webkit-scrollbar-thumb {
+            background: #ec4899;
+            border-radius: 10px;
+        }
+
+        /* Mobile Navigation Hints */
+        .mobile-hint {
+            display: none;
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #666;
+            z-index: 100;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 767px) {
+            .mobile-hint {
+                display: block;
+            }
+        }
+
+        /* Prevent text selection on mobile */
+        .no-select {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Loading indicator */
+        .loader {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
         }
     </style>
 </head>
 
-<body>
+<body class="no-select">
     <div id="app">
         <div id="canvas-container"></div>
         
         <!-- Hidden Audio Element -->
         <audio id="background-music" loop preload="auto">
-            <source src="bithday.mp3" type="audio/mpeg">
+            <source src="birthday.mp3" type="audio/mpeg">
         </audio>
         
         <!-- Minimal Music Indicator -->
-        <div id="music-status" class="music-status" title="Music is playing">🎵</div>
+        <div id="music-status" class="music-status" title="Tap to toggle music">🎵</div>
 
         <div id="progress-container">
             <div id="progress-bar"></div>
         </div>
 
+        <!-- Mobile Navigation Hint -->
+        <div class="mobile-hint">💕 Tap buttons to navigate</div>
+
         <div id="content">
             <!-- Step 1: Initial Reveal -->
             <div class="step active" id="step1">
                 <div class="emoji heart-beat">❤️</div>
-                <h1 class="text-4xl md:text-5xl font-bold mb-6 text-gradient">Hey Beautiful</h1>
-                <p class="text-xl text-gray-700 mb-8">I made something special for you...</p>
+                <h1 class="text-gradient">Hey Beautiful</h1>
+                <p class="text-gray-700">I made something special for you...</p>
                 <button class="btn" id="start-btn">Let's Begin</button>
             </div>
 
             <!-- Step 2: Birthday Message -->
             <div class="step" id="step2">
                 <div class="emoji">🎉</div>
-                <h2 class="text-3xl md:text-4xl font-bold mb-6 text-gradient">Happy Birthday!</h2>
-                <p class="text-lg text-gray-700 mb-6">
+                <h2 class="text-gradient">Happy Birthday!</h2>
+                <p class="text-gray-700">
                    On your birthday, I just want to say thank you. Thank you for your laugh, your kindness, and the way you love me. You didn't just come into my life, you changed it for the absolute best. I can't wait to see what this next year brings for you, because watching you shine is my favorite thing. Happy Birthday, my love.
                 </p>
                 <button class="btn" id="next-btn-2">What makes you special?</button>
@@ -228,22 +531,21 @@
 
             <!-- Step 3: Reasons You're Amazing -->
             <div class="step" id="step3">
-                <h2 class="text-3xl md:text-4xl font-bold mb-8 text-gradient">Here's why you're incredible</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <h2 class="text-gradient mb-8">Here's why you're incredible</h2>
+                <div class="grid">
                     <div class="reason-card">
                         <div class="emoji text-3xl">✨</div>
-                        <h3 class="text-xl font-bold mb-2 text-pink-600">Your Kindness</h3>
-                        <p class="text-gray-700">The way you care about others is truly inspiring. You have the biggest
-                            heart.</p>
+                        <h3 class="text-pink-600">Your Kindness</h3>
+                        <p class="text-gray-700">The way you care about others is truly inspiring. You have the biggest heart.</p>
                     </div>
                     <div class="reason-card">
                         <div class="emoji text-3xl">😊</div>
-                        <h3 class="text-xl font-bold mb-2 text-pink-600">Your Smile</h3>
+                        <h3 class="text-pink-600">Your Smile</h3>
                         <p class="text-gray-700">It lights up every room you enter and stays in my mind all day.</p>
                     </div>
                     <div class="reason-card">
                         <div class="emoji text-3xl">🌟</div>
-                        <h3 class="text-xl font-bold mb-2 text-pink-600">Your Spirit</h3>
+                        <h3 class="text-pink-600">Your Spirit</h3>
                         <p class="text-gray-700">Your passion and energy are contagious. You make life exciting!</p>
                     </div>
                 </div>
@@ -253,14 +555,13 @@
             <!-- Step 4: Memory Lane -->
             <div class="step" id="step4">
                 <div class="emoji">📸</div>
-                <h2 class="text-3xl md:text-4xl font-bold mb-6 text-gradient">Remember When...</h2>
-                <div class="bg-gradient-to-r from-pink-200 to-rose-200 rounded-xl p-8 mb-8 flex flex-col justify-center items-center">
-                    <img src="crush.webp" height="200" width="200" alt="" srcset="">
-                    <p class="text-lg text-gray-700 italic mt-2">(Imagine our favorite memory together here)</p>
+                <h2 class="text-gradient">Remember When...</h2>
+                <div class="memory-container">
+                    <img src="crush.webp" class="memory-img" alt="Our beautiful memory" onerror="this.style.display='none'">
+                    <p class="text-gray-700 italic mt-4">(Imagine our favorite memory together here)</p>
                 </div>
-                <p class="text-lg text-gray-700 mb-6">
-                    Every moment with you becomes a cherished memory. Whether we're laughing together or just enjoying
-                    the silence, time with you is always special.
+                <p class="text-gray-700">
+                    Every moment with you becomes a cherished memory. Whether we're laughing together or just enjoying the silence, time with you is always special.
                 </p>
                 <button class="btn" id="next-btn-4">One Last Thing</button>
             </div>
@@ -268,25 +569,35 @@
             <!-- Step 5: Final Wish -->
             <div class="step" id="step5">
                 <div class="emoji">🎂</div>
-                <h2 class="text-3xl md:text-4xl font-bold mb-6 text-gradient">My Birthday Wish For You</h2>
-                <p class="text-lg text-gray-700 mb-8">
-                  Happy Birthday Meri Jaan.
-                    ALLAH apko hamesha rakhe. Apko kamiyabi de. Apki har jayaz khawhish ko apni bargah me qubool kare. ALLAH apko Neet me ache numbers ke sath kamiyab kare. ALLAH kare yeh brithday apki life ka best birthday ho apko ye bithday ke sath apko har wo khushi mile jiske ap haqdar hai.
-                    Mai janta hu mai apki kabhi kadar nhii kara. Aajjii ALLAH meku bina mange ke apko meri zindagi me diye the mai hi wo beqadar nalayak insaan huu jo apki qadar nhii kara. Lekin aj wo din wo saal mere life ke best days best months best year the jo ap mere sath the i know
-                    I'm the worst person in the world ap meku har baar smjhate rahe lekin mai hi wo nakara insaan tha. Khair mazi ke yaadon ko yaad krke ab kuch hasil to nhi ho sakta lekin ek baat bolna hai apse. Kal bhi apse mohabbat thi aj bhi aphi se hai aur hamesha apse hi rehti yeh wada hai mere 
-                    na ap jaisa koi chahiye aur na koi aur it's fine Btw best of luck MERI JAAN jaha bhi raho jiske sath bhi raho khush raho ALLAH apko har imtehan me kamiyabi de AMEEN SUMMA AMEEN YA RAB-UL_ALAMEEM.... Once Again WISH YOU A VERY HAPPY BAIRTHDAY MERI JAAN PRINCESS 
-                </p>
-                <p class="text-xl font-semibold text-pink-600 mb-8">
+                <h2 class="text-gradient">My Birthday Wish For You</h2>
+                <div class="long-text-container">
+                    <p class="text-gray-700">
+                        Happy Birthday Meri Jaan. ALLAH apko hamesha rakhe. Apko kamiyabi de. Apki har jayaz khawhish ko apni bargah me qubool kare. ALLAH apko Neet me ache numbers ke sath kamiyab kare. ALLAH kare yeh brithday apki life ka best birthday ho apko ye bithday ke sath apko har wo khushi mile jiske ap haqdar hai.
+                    </p>
+                    <p class="text-gray-700">
+                        Mai janta hu mai apki kabhi kadar nhii kara. Aajjii ALLAH meku bina mange ke apko meri zindagi me diye the mai hi wo beqadar nalayak insaan huu jo apki qadar nhii kara. Lekin aj wo din wo saal mere life ke best days best months best year the jo ap mere sath the i know I'm the worst person in the world ap meku har baar smjhate rahe lekin mai hi wo nakara insaan tha.
+                    </p>
+                    <p class="text-gray-700">
+                        Khair mazi ke yaadon ko yaad krke ab kuch hasil to nhi ho sakta lekin ek baat bolna hai apse. Kal bhi apse mohabbat thi aj bhi aphi se hai aur hamesha apse hi rehti yeh wada hai mere na ap jaisa koi chahiye aur na koi aur it's fine Btw best of luck MERI JAAN jaha bhi raho jiske sath bhi raho khush raho ALLAH apko har imtehan me kamiyabi de AMEEN SUMMA AMEEN YA RAB-UL_ALAMEEM....
+                    </p>
+                    <p class="text-gray-700">
+                        Once Again WISH YOU A VERY HAPPY BAIRTHDAY MERI JAAN PRINCESS 
+                    </p>
+                </div>
+                <p class="text-pink-600 font-semibold text-xl my-6">
                     Happy Birthday, My Forever! ❤️
                 </p>
                 <button class="btn" id="confetti-btn">Celebrate!</button>
-                <p class="mt-8 text-gray-500">Made with ❤️ just for you</p>
+                <p class="mt-8 text-gray-500 text-sm">Made with ❤️ just for you</p>
             </div>
         </div>
     </div>
 
     <script>
-        // Simple Auto-play Music System - ADDED ONLY THIS
+        // Detect mobile device
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        // Simple Auto-play Music System
         const backgroundMusic = document.getElementById('background-music');
         const musicStatus = document.getElementById('music-status');
         
@@ -301,25 +612,48 @@
                     // Show minimal music indicator
                     musicStatus.style.display = 'flex';
                     musicStatus.classList.add('playing');
+                    musicStatus.title = 'Music is playing';
                     
                     // Gradually increase volume for smooth start
                     let vol = 0;
                     const fadeIn = setInterval(() => {
                         vol += 0.05;
                         backgroundMusic.volume = vol;
-                        if (vol >= 0.3) clearInterval(fadeIn);
+                        if (vol >= 0.3) {
+                            clearInterval(fadeIn);
+                        }
                     }, 100);
                 })
                 .catch(error => {
                     console.log("Auto-play was prevented. Music will start on user interaction.");
-                    // Music will start when user clicks any button
+                    musicStatus.style.display = 'flex';
+                    musicStatus.innerHTML = '▶️';
+                    musicStatus.title = 'Tap to play music';
                 });
         }
+        
+        // Toggle music play/pause
+        function toggleMusic() {
+            if (backgroundMusic.paused) {
+                backgroundMusic.play();
+                musicStatus.innerHTML = '🎵';
+                musicStatus.classList.add('playing');
+                musicStatus.title = 'Music is playing';
+            } else {
+                backgroundMusic.pause();
+                musicStatus.innerHTML = '▶️';
+                musicStatus.classList.remove('playing');
+                musicStatus.title = 'Tap to play music';
+            }
+        }
+        
+        // Music button click event
+        musicStatus.addEventListener('click', toggleMusic);
         
         // Try to start music when page loads
         setTimeout(startMusic, 1000);
         
-        // Start music when user clicks any button
+        // Start music when user clicks any button (for autoplay restrictions)
         document.querySelectorAll('.btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 if (backgroundMusic.paused) {
@@ -328,129 +662,164 @@
             });
         });
         
-        // Also start music when user touches the screen (for mobile)
-        document.addEventListener('touchstart', function startMusicOnTouch() {
-            if (backgroundMusic.paused) {
-                startMusic();
-            }
-            document.removeEventListener('touchstart', startMusicOnTouch);
-        }, { once: true });
-
-        // Three.js Heart Background
-        const container = document.getElementById('canvas-container');
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        container.appendChild(renderer.domElement);
-
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = 30;
-
-        // Improved Heart Geometry
-        const x = 0, y = 0;
-        const heartShape = new THREE.Shape();
-        heartShape.moveTo(x + 0.5, y + 0.5);
-        heartShape.bezierCurveTo(x + 0.5, y + 0.5, x + 1, y, x, y);
-        heartShape.bezierCurveTo(x - 1, y, x - 1, y + 1.5, x - 1, y + 1.5);
-        heartShape.bezierCurveTo(x - 1, y + 2.5, x + 0.5, y + 3.5, x + 0.5, y + 3.5);
-        heartShape.bezierCurveTo(x + 0.5, y + 3.5, x + 2, y + 2.5, x + 2, y + 1.5);
-        heartShape.bezierCurveTo(x + 2, y + 1.5, x + 2, y, x + 1, y);
-        heartShape.bezierCurveTo(x + 0.5, y, x + 0.5, y + 0.5, x + 0.5, y + 0.5);
-
-        const extrudeSettings = {
-            depth: 0.5,
-            bevelEnabled: true,
-            bevelSegments: 3,
-            bevelSize: 0.2,
-            bevelThickness: 0.3
-        };
-
-        const heartGeometry = new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
-
-        // Create multiple hearts with different colors and properties
-        const hearts = [];
-        const colors = [
-            0xff6b6b, 0xff8e8e, 0xffb3b3, 0xffd8d8,
-            0xff9e9e, 0xffc1c1, 0xff6b8e, 0xff8eb3
-        ];
-
-        for (let i = 0; i < 25; i++) {
-            const material = new THREE.MeshPhongMaterial({
-                color: colors[Math.floor(Math.random() * colors.length)],
-                emissive: 0xff0000,
-                emissiveIntensity: 0.1,
-                shininess: 100,
-                transparent: true,
-                opacity: 0.9
-            });
-
-            const heart = new THREE.Mesh(heartGeometry, material);
-
-            // Random position and scale
-            heart.position.x = (Math.random() - 0.5) * 50;
-            heart.position.y = (Math.random() - 0.5) * 50;
-            heart.position.z = (Math.random() - 0.5) * 50;
-
-            const scale = Math.random() * 0.8 + 0.5;
-            heart.scale.set(scale, scale, scale);
-
-            // Random rotation
-            heart.rotation.x = Math.random() * Math.PI;
-            heart.rotation.y = Math.random() * Math.PI;
-
-            // Store animation properties
-            heart.userData = {
-                speedX: Math.random() * 0.02 - 0.01,
-                speedY: Math.random() * 0.02 - 0.01,
-                speedZ: Math.random() * 0.02 - 0.01,
-                rotationSpeedX: Math.random() * 0.01,
-                rotationSpeedY: Math.random() * 0.01,
-                originalX: heart.position.x,
-                originalY: heart.position.y,
-                originalZ: heart.position.z,
-                floatDistance: 2 + Math.random() * 3
-            };
-
-            scene.add(heart);
-            hearts.push(heart);
+        // Start music when user touches the screen (mobile)
+        if (isMobile) {
+            document.addEventListener('touchstart', function startMusicOnTouch() {
+                if (backgroundMusic.paused) {
+                    startMusic();
+                }
+                document.removeEventListener('touchstart', startMusicOnTouch);
+            }, { once: true });
         }
 
-        // Add lights
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-        scene.add(ambientLight);
+        // Three.js Heart Background - Optimized for Mobile
+        let scene, camera, renderer, hearts = [];
+        
+        function initThreeJS() {
+            const container = document.getElementById('canvas-container');
+            
+            // Create renderer with mobile optimization
+            renderer = new THREE.WebGLRenderer({ 
+                antialias: !isMobile, // Disable antialias on mobile for performance
+                alpha: true,
+                powerPreference: "high-performance"
+            });
+            
+            // Lower resolution on mobile for better performance
+            const pixelRatio = isMobile ? Math.min(window.devicePixelRatio, 1) : window.devicePixelRatio;
+            renderer.setPixelRatio(pixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
 
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        directionalLight.position.set(1, 1, 1);
-        scene.add(directionalLight);
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 30;
 
-        // Animation loop
+            // Create hearts with simpler geometry on mobile
+            createHearts();
+
+            // Add lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+
+            // Start animation
+            animate();
+        }
+
+        function createHearts() {
+            // Use simpler geometry on mobile for better performance
+            const heartGeometry = isMobile ? 
+                new THREE.SphereGeometry(1, 8, 8) : // Simpler sphere on mobile
+                createHeartGeometry(); // Complex heart on desktop
+
+            const colors = [
+                0xff6b6b, 0xff8e8e, 0xffb3b3, 0xffd8d8,
+                0xff9e9e, 0xffc1c1, 0xff6b8e, 0xff8eb3
+            ];
+
+            // Fewer hearts on mobile for better performance
+            const heartCount = isMobile ? 15 : 25;
+
+            for (let i = 0; i < heartCount; i++) {
+                const material = new THREE.MeshPhongMaterial({
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    emissive: 0xff0000,
+                    emissiveIntensity: 0.1,
+                    shininess: 100,
+                    transparent: true,
+                    opacity: 0.9
+                });
+
+                const heart = new THREE.Mesh(heartGeometry, material);
+
+                // Random position and scale
+                heart.position.x = (Math.random() - 0.5) * 50;
+                heart.position.y = (Math.random() - 0.5) * 50;
+                heart.position.z = (Math.random() - 0.5) * 50;
+
+                const scale = Math.random() * 0.8 + 0.5;
+                heart.scale.set(scale, scale, scale);
+
+                // Random rotation
+                heart.rotation.x = Math.random() * Math.PI;
+                heart.rotation.y = Math.random() * Math.PI;
+
+                // Store animation properties
+                heart.userData = {
+                    speedX: Math.random() * 0.02 - 0.01,
+                    speedY: Math.random() * 0.02 - 0.01,
+                    speedZ: Math.random() * 0.02 - 0.01,
+                    rotationSpeedX: Math.random() * 0.01,
+                    rotationSpeedY: Math.random() * 0.01,
+                    originalX: heart.position.x,
+                    originalY: heart.position.y,
+                    originalZ: heart.position.z,
+                    floatDistance: 2 + Math.random() * 3
+                };
+
+                scene.add(heart);
+                hearts.push(heart);
+            }
+        }
+
+        function createHeartGeometry() {
+            const x = 0, y = 0;
+            const heartShape = new THREE.Shape();
+            heartShape.moveTo(x + 0.5, y + 0.5);
+            heartShape.bezierCurveTo(x + 0.5, y + 0.5, x + 1, y, x, y);
+            heartShape.bezierCurveTo(x - 1, y, x - 1, y + 1.5, x - 1, y + 1.5);
+            heartShape.bezierCurveTo(x - 1, y + 2.5, x + 0.5, y + 3.5, x + 0.5, y + 3.5);
+            heartShape.bezierCurveTo(x + 0.5, y + 3.5, x + 2, y + 2.5, x + 2, y + 1.5);
+            heartShape.bezierCurveTo(x + 2, y + 1.5, x + 2, y, x + 1, y);
+            heartShape.bezierCurveTo(x + 0.5, y, x + 0.5, y + 0.5, x + 0.5, y + 0.5);
+
+            const extrudeSettings = {
+                depth: 0.5,
+                bevelEnabled: true,
+                bevelSegments: 3,
+                bevelSize: 0.2,
+                bevelThickness: 0.3
+            };
+
+            return new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
+        }
+
         function animate() {
             requestAnimationFrame(animate);
 
+            // Slower animation on mobile for better performance
+            const timeFactor = isMobile ? 0.7 : 1;
+
             // Animate hearts
             hearts.forEach(heart => {
-                // Floating animation
-                const time = Date.now() * 0.001;
+                const time = Date.now() * 0.001 * timeFactor;
                 heart.position.x = heart.userData.originalX + Math.sin(time * heart.userData.speedX * 10) * heart.userData.floatDistance;
                 heart.position.y = heart.userData.originalY + Math.sin(time * heart.userData.speedY * 10) * heart.userData.floatDistance;
                 heart.position.z = heart.userData.originalZ + Math.sin(time * heart.userData.speedZ * 10) * heart.userData.floatDistance;
 
-                // Rotation
-                heart.rotation.x += heart.userData.rotationSpeedX;
-                heart.rotation.y += heart.userData.rotationSpeedY;
+                heart.rotation.x += heart.userData.rotationSpeedX * timeFactor;
+                heart.rotation.y += heart.userData.rotationSpeedY * timeFactor;
             });
 
             renderer.render(scene, camera);
         }
 
-        animate();
-
         // Handle window resize
-        window.addEventListener('resize', () => {
+        function handleResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
-        });
+            
+            // Adjust pixel ratio on resize
+            const pixelRatio = isMobile ? Math.min(window.devicePixelRatio, 1) : window.devicePixelRatio;
+            renderer.setPixelRatio(pixelRatio);
+        }
+
+        window.addEventListener('resize', handleResize);
 
         // Step Navigation
         let currentStep = 1;
@@ -468,14 +837,21 @@
             });
 
             // Show current step
-            document.getElementById(`step${stepNumber}`).classList.add('active');
+            const stepElement = document.getElementById(`step${stepNumber}`);
+            stepElement.classList.add('active');
+            
+            // Scroll to top of step for mobile
+            if (isMobile) {
+                stepElement.scrollTop = 0;
+                window.scrollTo(0, 0);
+            }
 
             // Update progress bar
             updateProgressBar();
 
             // Special effect for last step
             if (stepNumber === totalSteps) {
-                document.getElementById('confetti-btn').classList.add('animate-pulse');
+                document.getElementById('confetti-btn').classList.add('heart-beat');
             }
         }
 
@@ -510,9 +886,13 @@
                 }, 5000);
             }
 
+            // Less confetti on mobile for better performance
+            const particleCount = isMobile ? 100 : 150;
+            const heartParticleCount = isMobile ? 20 : 30;
+
             // Standard confetti
             confetti({
-                particleCount: 150,
+                particleCount: particleCount,
                 spread: 70,
                 origin: { y: 0.6 },
                 colors: ['#ff0000', '#ff69b4', '#ff1493', '#ffc0cb']
@@ -521,7 +901,7 @@
             // Heart-shaped confetti
             setTimeout(() => {
                 confetti({
-                    particleCount: 30,
+                    particleCount: heartParticleCount,
                     spread: 60,
                     origin: { y: 0.5 },
                     shapes: ['heart'],
@@ -532,7 +912,7 @@
             // More hearts from different directions
             setTimeout(() => {
                 confetti({
-                    particleCount: 20,
+                    particleCount: heartParticleCount / 2,
                     angle: 60,
                     spread: 55,
                     origin: { x: 0 },
@@ -541,7 +921,7 @@
                 });
 
                 confetti({
-                    particleCount: 20,
+                    particleCount: heartParticleCount / 2,
                     angle: 120,
                     spread: 55,
                     origin: { x: 1 },
@@ -566,8 +946,23 @@
             });
         });
 
-        // Initialize progress bar
-        updateProgressBar();
+        // Initialize everything
+        window.addEventListener('DOMContentLoaded', () => {
+            // Initialize Three.js
+            initThreeJS();
+            
+            // Initialize progress bar
+            updateProgressBar();
+        });
+
+        // Prevent pull-to-refresh on mobile
+        document.addEventListener('touchmove', function(e) {
+            if (e.target.closest('.step')) {
+                // Allow scrolling within step
+                return;
+            }
+            e.preventDefault();
+        }, { passive: false });
     </script>
 </body>
 </html>
