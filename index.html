@@ -165,12 +165,43 @@
             height: 100%;
             z-index: 1;
         }
+        
+        /* Music Status Indicator - Minimal */
+        .music-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            cursor: pointer;
+            font-size: 18px;
+            opacity: 0.7;
+        }
+        
+        .music-status.playing {
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
     </style>
 </head>
 
 <body>
     <div id="app">
         <div id="canvas-container"></div>
+        
+        <!-- Hidden Audio Element -->
+        <audio id="background-music" loop preload="auto">
+            <source src="birthday.mp3" type="audio/mpeg">
+        </audio>
+        
+        <!-- Minimal Music Indicator -->
+        <div id="music-status" class="music-status" title="Music is playing">🎵</div>
 
         <div id="progress-container">
             <div id="progress-bar"></div>
@@ -255,6 +286,56 @@
     </div>
 
     <script>
+        // Simple Auto-play Music System - ADDED ONLY THIS
+        const backgroundMusic = document.getElementById('background-music');
+        const musicStatus = document.getElementById('music-status');
+        
+        // Set volume to 30% for soft background music
+        backgroundMusic.volume = 0.3;
+        
+        // Function to start music
+        function startMusic() {
+            backgroundMusic.play()
+                .then(() => {
+                    console.log("Music started successfully");
+                    // Show minimal music indicator
+                    musicStatus.style.display = 'flex';
+                    musicStatus.classList.add('playing');
+                    
+                    // Gradually increase volume for smooth start
+                    let vol = 0;
+                    const fadeIn = setInterval(() => {
+                        vol += 0.05;
+                        backgroundMusic.volume = vol;
+                        if (vol >= 0.3) clearInterval(fadeIn);
+                    }, 100);
+                })
+                .catch(error => {
+                    console.log("Auto-play was prevented. Music will start on user interaction.");
+                    // Music will start when user clicks any button
+                });
+        }
+        
+        // Try to start music when page loads
+        setTimeout(startMusic, 1000);
+        
+        // Start music when user clicks any button
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (backgroundMusic.paused) {
+                    startMusic();
+                }
+            });
+        });
+        
+        // Also start music when user touches the screen (for mobile)
+        document.addEventListener('touchstart', function startMusicOnTouch() {
+            if (backgroundMusic.paused) {
+                startMusic();
+            }
+            document.removeEventListener('touchstart', startMusicOnTouch);
+        }, { once: true });
+
         // Three.js Heart Background
         const container = document.getElementById('canvas-container');
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -421,6 +502,14 @@
 
         // Confetti button
         document.getElementById('confetti-btn').addEventListener('click', () => {
+            // Increase music volume during celebration
+            if (!backgroundMusic.paused) {
+                backgroundMusic.volume = 0.5;
+                setTimeout(() => {
+                    backgroundMusic.volume = 0.3;
+                }, 5000);
+            }
+
             // Standard confetti
             confetti({
                 particleCount: 150,
@@ -481,5 +570,4 @@
         updateProgressBar();
     </script>
 </body>
-
 </html>
